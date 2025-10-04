@@ -1,0 +1,11 @@
+[package]
+name = "simple_nn"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "0.13.0"
+rayon = "1.10.0"
+#ndarray = "0.16.1"
+#polars = "0.42.0"
+#rand = "0.8.5"
