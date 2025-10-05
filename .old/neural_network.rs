@@ -11,7 +11,7 @@ pub struct NeuralNetwork {
 
 
 impl NeuralNetwork {
-    pub fn new(input_size: usize, num_classes: usize, learning_rate: f64) -> NeuralNetwork {
+    pub fn new(input_size: usize, num_classes: usize, learning_rate: f32) -> NeuralNetwork {
         let nodes = (0..num_classes)
             .map(|_| Node::new(input_size, learning_rate))
             .collect();
@@ -21,8 +21,8 @@ impl NeuralNetwork {
         }
     }
 
-    pub fn predict(&self, input: Array1<f64>) -> usize {
-        let predictions: Vec<f64> = self.nodes.iter()
+    pub fn predict(&self, input: Array1<f32>) -> usize {
+        let predictions: Vec<f32> = self.nodes.iter()
             .map(|node| node.predict(&input))
             .collect();
         
@@ -32,7 +32,7 @@ impl NeuralNetwork {
             .unwrap()
     }
 
-    pub fn train(&mut self, inputs: Array2<f64>, targets: Array2<f64>, epochs: usize) {
+    pub fn train(&mut self, inputs: Array2<f32>, targets: Array2<f32>, epochs: usize) {
         for _ in 0..epochs {
             let mut total_loss = 0.0;
 
@@ -48,7 +48,7 @@ impl NeuralNetwork {
                 }
             }
 
-            println!("Epoch: {}, Loss: {}", _, total_loss / inputs.shape()[0] as f64);
+            println!("Epoch: {}, Loss: {}", _, total_loss / inputs.shape()[0] as f32);
         }
     }
 }
