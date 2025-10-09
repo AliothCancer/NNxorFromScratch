@@ -3,7 +3,7 @@
 use ndarray::{arr2, Array2, ArrayView2};
 
 #[inline]
-pub fn loss(y_hat: &Array2<f32>, y_true: &Array2<f32>) -> Array2<f32> {
+pub fn loss(y_hat: &Array2<f32>, y_true: ArrayView2<f32>) -> Array2<f32> {
     // dbg!(&y_true);
     match y_true[(0, 0)] {
         0.0 => {
@@ -22,7 +22,7 @@ pub fn loss(y_hat: &Array2<f32>, y_true: &Array2<f32>) -> Array2<f32> {
 
 #[inline]
 /// La derivata combinata di BCE e Sigmoid si semplifica in: `y_hat - y_true`
-pub fn bce_and_sigmoid_grad(y_hat: &Array2<f32>, y_true: &Array2<f32>) -> Array2<f32> {
+pub fn bce_and_sigmoid_grad(y_hat: &Array2<f32>, y_true: ArrayView2<f32>) -> Array2<f32> {
     y_hat.to_owned() - y_true
 }
 
