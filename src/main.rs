@@ -10,6 +10,7 @@ use ndarray_rand::{rand_distr::StandardNormal, RandomExt};
 use crate::{
     functions::*,
     layer::{Activation, Layer},
+    model::{Model, ModelBuilder},
 };
 
 const LEARNING_RATE: f32 = 0.02;
@@ -17,26 +18,35 @@ const EPOCHS: usize = 10000;
 
 fn main() {
     // Input come vettori colonna (2, 1)
-    let features = array![
-        [[0.0_f32],[0.0]], // (2, 1)
-        [[1.0],[1.0]],     // (2, 1)
-        [[0.0],[1.0]],     // (2, 1)
-        [[1.0],[0.0]]      // (2, 1)
+    let features = vec![
+        array![[0.0_f32], [0.0]], // (2, 1)
+        array![[1.0], [1.0]],     // (2, 1)
+        array![[0.0], [1.0]],     // (2, 1)
+        array![[1.0], [0.0]],     // (2, 1)
     ];
-    let targets = array![
-        [[1.0_f32]], // (1, 1)
-        [[0.0]],
-        [[1.0]],
-        [[1.0]]
+    let targets = vec![
+        array![[0.0_f32]], // (1, 1)
+        array![[0.0]],
+        array![[1.0]],
+        array![[1.0]],
     ];
-
-    let mut h1 = Layer::new("Hidden 1", 2, 3, Activation::Tanh);
-    let mut h2 = Layer::new("Hidden 2", 3, 2, Activation::Tanh);
-    let mut output = Layer::new("Output", 2, 1, Activation::Sigmoid);
 
     println!("Inizio training XOR...\n");
-    // dbg!(
-    //     array![[1,2]].t().dot(&array![[3, 4]])
-    // );
+    ModelBuilder::default()
+        .set_epoch(2000)
+        .set_show_loss_every(100)
+        .set_features(features)
+        .set_targets(targets)
+        .set_layers(vec![
+            Layer::new("Hidden 1", 2, 3, Activation::Tanh),
+            Layer::new("Hidden 2", 3, 2, Activation::Tanh),
+            Layer::new("Output", 2, 1, Activation::Sigmoid),
+        ])
+        .build()
+        // for the moment train is made for only this number of layers
+        // also do not touch Output Activation function, do not change its act func or it's definition
+        // see the
+        .train();
+
     
 }
