@@ -15,7 +15,6 @@ let file = File::open("iris_encoded.csv").unwrap();
     dbg!(features.shape());
     let targets = dataset.slice(s![.., features_len..]).insert_axis(Axis(2)).to_owned();
     dbg!(&targets.shape());
-    // Input come vettori colonna (2, 1)
 
     ModelBuilder::default()
         .set_epoch(EPOCHS)
