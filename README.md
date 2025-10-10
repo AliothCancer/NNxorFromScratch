@@ -3,6 +3,12 @@
 - Only output activation function is sigmoid because its derivative is conveniently fused with the bynary cross entropy cost function
 - Supports variable input output size for all layers
 
+# Important feature missing
+- train test splitting with shuffling
+- Batching
+    - Batch averaged gradient
+    - Stochastic sampling
+
 # Api
 It offers a simple builder api to train a user defined custom neural network with currently some limitation:
 
