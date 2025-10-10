@@ -1,7 +1,12 @@
+
+
 # Current implementation
 - The number of layers require to modify the train method: currently there's 2 hidden layers and a output layer
 - Only output activation function is sigmoid because its derivative is conveniently fused with the bynary cross entropy cost function
 - Supports variable input output size for all layers
+
+## Optimization
+It is currently a greedy gradient descent, non adaptive. 
 
 # Important feature missing
 - train test splitting with shuffling
