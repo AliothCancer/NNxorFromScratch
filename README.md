@@ -1,4 +1,10 @@
-It offers a simple api to train a user defined custom neural network with currently some limitation:
+# Current implementation
+- The number of layers require to modify the train method: currently there's 2 hidden layers and a output layer
+- Only output activation function is sigmoid because its derivative is conveniently fused with the bynary cross entropy cost function
+- Supports variable input output size for all layers
+
+# Api
+It offers a simple builder api to train a user defined custom neural network with currently some limitation:
 
 ```rust
 let file = File::open("iris_encoded.csv").unwrap();
