@@ -3,6 +3,9 @@ use std::{collections::HashMap, default, fs::File};
 use csv::WriterBuilder;
 use ndarray::{array, Array2, Array3, Axis, Order};
 use ndarray_csv::Array2Writer;
+use ndarray_rand::rand::{rngs::ThreadRng, seq::index::sample};
+
+use rand::thread_rng;
 use serde::Serialize;
 
 use crate::{
@@ -19,14 +22,20 @@ pub struct Model {
     epoch: u32,
     show_loss_every: u32,
     losses: Vec<Array2<f32>>,
+    train_test_ratio: f32,
+    test_len: usize
 }
 
 impl Model {
     pub fn train(mut self) -> Self {
         let feat_len = self.features.len_of(Axis(0));
+        let train_len = (self.train_test_ratio * feat_len as f32) as usize;
+        self.test_len = feat_len - train_len;
         // dbg!(self.targets.outer_iter().take(1).last().unwrap());
+        let mut rng = thread_rng();
         for epoch in (0..=self.epoch) {
-            let mut epoch_loss = array![[0.0]];
+            let mut epoch_loss = array![[0.0, 0.0, 0.0]];
+            let random_index = sample(&mut rng, feat_len, feat_len);
             for (x, y_true) in self.features.outer_iter().zip(self.targets.outer_iter()) {
                 // dbg!(&x.shape(),&y_true.shape());
                 let x = x.to_owned();
@@ -85,6 +94,7 @@ impl Model {
 
     pub fn metrics(mut self) -> Self {
         println!("\n=== CALCOLO METRICHE ===");
+        let train_len = self.features.shape()[0];
 
         let class_names = ["Iris-setosa", "Iris-virginica", "Iris-versicolor"];
         let mut metrics: HashMap<usize, ClassMetrics> = HashMap::new();
@@ -97,7 +107,7 @@ impl Model {
 
         for (x, y_true) in self
             .features
-            .outer_iter()
+            .outer_iter().skip(train_len)
             .zip(self.targets.outer_iter())
         {
             let x = x.to_owned();
@@ -188,16 +198,26 @@ pub struct ModelBuilder {
     layers: Option<Vec<Layer>>,
     epoch: Option<u32>,
     show_loss_every: Option<u32>,
+    /// from 0.0 to 1.0
+    train_test_ratio: Option<f32>
 }
 impl ModelBuilder {
     pub fn build(self) -> Model {
         Model {
-            features: self.features.unwrap(),
-            targets: self.targets.unwrap(),
-            layers: self.layers.unwrap(),
-            epoch: self.epoch.unwrap(),
+            features: self.features.expect("Missing feature field"),
+            targets: self.targets.expect("Missing targets field"),
+            layers: self.layers.expect("Missing layers field"),
+            epoch: self.epoch.expect("Missing field epoch"),
             show_loss_every: self.show_loss_every.unwrap_or(0),
             losses: vec![],
+            train_test_ratio: self.train_test_ratio.expect("Missing train_test_ration use its set method on ModelBuilder"),
+            test_len: 0
+        }
+    }
+    pub fn set_train_test_ratio(mut self, ratio: f32) -> Self {
+        Self {
+            train_test_ratio: Some(ratio),
+            ..self
         }
     }
     pub fn set_layers(mut self, layers: Vec<Layer>) -> Self {

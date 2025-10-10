@@ -20,13 +20,13 @@ use crate::{
     model::{Model, ModelBuilder},
 };
 
-const LEARNING_RATE: f32 = 0.002;
+const LEARNING_RATE: f32 = 0.02;
 const EPOCHS: u32 = 60_000;
 
-const INPUT: usize = 3;
-const H1: usize = 3;
-const H2: usize = 2;
-const OUTPUT: usize = 4;
+
+const H1: usize = 7;
+const H2: usize = 8;
+
 
 #[derive(Deserialize, Debug)]
 struct IrisRecord {
@@ -40,7 +40,7 @@ struct IrisRecord {
 }
 
 fn main() {
-    let file = File::open("/home/giulio/Scrivania/NeuralFromScratch/iris_encoded.csv").unwrap();
+    let file = File::open("iris_encoded.csv").unwrap();
     let mut reader = ReaderBuilder::new()
         .has_headers(true)
         .delimiter(b',')
@@ -54,17 +54,17 @@ fn main() {
     dbg!(features.shape());
     let targets = dataset.slice(s![.., features_len..]).insert_axis(Axis(2)).to_owned();
     dbg!(&targets.shape());
-    // Input come vettori colonna (2, 1)
 
     ModelBuilder::default()
         .set_epoch(EPOCHS)
         .set_show_loss_every(EPOCHS / 10)
+        .set_train_test_ratio(0.25)
         .set_features(features)
         .set_targets(targets)
         .set_layers(vec![
-            Layer::new("Hidden 1", features_len, 3, Activation::Tanh),
-            Layer::new("Hidden 2", 3, 6, Activation::Tanh),
-            Layer::new("Output", 6, 3, Activation::Sigmoid),
+            Layer::new("Hidden 1", features_len, H1, Activation::Tanh),
+            Layer::new("Hidden 2", H1, H2, Activation::Tanh),
+            Layer::new("Output", H2, 3, Activation::Sigmoid),
         ])
         .build()
         .train()
